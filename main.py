@@ -1,16 +1,55 @@
-# This is a sample Python script.
+import dash
+from dash import dcc, html
+from dash.dependencies import Input, Output
+from dash.exceptions import PreventUpdate
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+app = dash.Dash(__name__)
 
+# Layout for the home page
+home_layout = html.Div(
+    children=[
+        html.H1("Home Page"),
+        dcc.Link("Go to Page 1", href="/page-1"),
+        html.Br(),
+        dcc.Link("Go to Page 2", href="/page-2"),
+    ]
+)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# Layout for Page 1
+page_1_layout = html.Div(
+    children=[
+        html.H1("Page 1"),
+        html.P("This is the content of Page 1."),
+        dcc.Link("Go back to Home", href="/"),
+    ]
+)
 
+# Layout for Page 2
+page_2_layout = html.Div(
+    children=[
+        html.H1("Page 2"),
+        html.P("This is the content of Page 2."),
+        dcc.Link("Go back to Home", href="/"),
+    ]
+)
 
-# Press the green button in the gutter to run the script.
+# Define the app layout with a dcc.Location component
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
+])
+
+# Callback to update the page content based on the URL
+@app.callback(Output('page-content', 'children'),
+              [Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname == '/page-1':
+        return page_1_layout
+    elif pathname == '/page-2':
+        return page_2_layout
+    else:
+        return home_layout
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    app.run_server(debug=True)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
